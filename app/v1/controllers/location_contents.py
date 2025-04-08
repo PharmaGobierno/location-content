@@ -33,7 +33,7 @@ class LocationContentsController(BaseController):
         logger: Logger,
         db: MongoDbManager,
         pubsub: PubsubManager,
-        verbose: bool = True
+        verbose: bool = True,
     ) -> None:
         self.db_manager = db
         self.pubsub_manager = pubsub
