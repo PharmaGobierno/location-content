@@ -1,1 +1,1 @@
-# sync-location-content
+# location-content

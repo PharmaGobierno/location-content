@@ -1,4 +1,4 @@
-from typing import Any, TypeVar
+from typing import Any, Type, TypeVar
 
 from pydantic import BaseModel
 from utils.logger import Logger
@@ -11,7 +11,8 @@ class BaseController:
         self.logger = logger
         self.verbose = verbose
 
-    def schema_validation(self, schema: BaseSchemaT, data: Any) -> BaseSchemaT:
-        self.logger.log_info(f"[input] {data}")
+    def schema_validation(self, schema: Type[BaseSchemaT], *, data: Any) -> BaseSchemaT:
+        if self.verbose:
+            self.logger.log_info(f"[input] {data}")
         parsed_model: BaseSchemaT = schema.model_validate(data)
         return parsed_model

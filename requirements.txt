@@ -5,7 +5,6 @@ pydantic==2.10.6
 pytest==8.3.5
 pytest-mock==3.14.0
 infra-mongodb-python @ git+https://github.com/PharmaGobierno/infra-mongodb-python@develop
-infra-pubsub-python @ git+https://github.com/PharmaGobierno/infra-pubsub-python@develop
 presentation-python @ git+https://github.com/PharmaGobierno/presentation-python@develop
 utils-loggin-python @ git+https://github.com/PharmaGobierno/utils-loggin-python@develop
 pharmagob-domain-python @ git+https://github.com/PharmaGobierno/pharmagob-domain-python@develop

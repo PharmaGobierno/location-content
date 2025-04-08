@@ -6,7 +6,7 @@ api_router = APIRouter(redirect_slashes=False)
 
 api_router.include_router(
     location_contents.router,
-    prefix="/async-msg/location-contents",
+    prefix="/async-msg",
     tags=["location", "contents", "async"],
 )
 
