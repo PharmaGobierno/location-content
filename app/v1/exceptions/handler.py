@@ -3,13 +3,11 @@ import traceback
 from functools import wraps
 
 from fastapi import Request, Response, status
-from presentation.errors import BaseError, DefaultError
+from presentation.errors import BaseError, DefaultError, NotFoundError
 from presentation.helpers import add_errors_to_response, destructuring
 from presentation.response import Response as APIResponse
 from pydantic import ValidationError
 from utils.logger import Logger
-
-from app.libs.errors import ValueError
 
 
 def exception_handler(response_status=status.HTTP_200_OK):
@@ -25,9 +23,6 @@ def exception_handler(response_status=status.HTTP_200_OK):
             try:
                 api_response.status = response_status
                 api_response.update_data(await func(request, response, *args, **kwargs))
-            except BaseError as error:
-                api_response.status = error.http_status
-                api_response.add_error(error)
             except BaseError as error:
                 api_response.status = error.http_status
                 api_response.add_error(error)
