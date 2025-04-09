@@ -9,6 +9,7 @@ from pharmagob.mongodb_repositories.shipment_details import ShipmentDetailReposi
 from pharmagob.v1.models.location_content import LocationContentModel
 from pharmagob.v1.models.messages.pubsub_msgs import LocationContentStatesPubsubMessage
 from pharmagob.v1.models.minified import min_models
+from pharmagob.v1.models.shipment import ShipmentModel
 from pharmagob.v1.services.location_contents import LocationContentService
 from pharmagob.v1.services.locations import LocationModel, LocationService
 from pharmagob.v1.services.shipment_details import (
@@ -18,7 +19,7 @@ from pharmagob.v1.services.shipment_details import (
 from presentation.errors import ErrorLocationEnum, NotFoundError
 from utils.logger import Logger
 
-from app.v1.schemas.shipment_status import Shipment, ShipmentStatusDataPayload
+from app.v1.schemas.shipment_status import ShipmentStatusDataPayload
 
 from ._base import BaseController
 
@@ -33,7 +34,7 @@ class LocationContentsController(BaseController):
         logger: Logger,
         db: MongoDbManager,
         pubsub: PubsubManager,
-        verbose: bool = True
+        verbose: bool = True,
     ) -> None:
         self.db_manager = db
         self.pubsub_manager = pubsub
@@ -48,7 +49,7 @@ class LocationContentsController(BaseController):
         )
         super().__init__(logger=logger, verbose=verbose)
 
-    def get_location(self, data: Shipment) -> LocationModel:
+    def get_location(self, data: ShipmentModel) -> LocationModel:
         _, locations = self.location_srv.get_by_umu_id(data.umu_id)
         first_location = next(iter(locations or []), None)
         if first_location is None:
@@ -59,8 +60,8 @@ class LocationContentsController(BaseController):
             )
         return LocationModel(**first_location)
 
-    def get_shipment_details(self, data: Shipment) -> Iterator[dict]:
-        _, shipment_details = self.shipment_detail_srv.get_by_shipment_id(data.id)
+    def get_shipment_details(self, data: ShipmentModel) -> Iterator[dict]:
+        _, shipment_details = self.shipment_detail_srv.get_by_shipment_id(data._id)
         return shipment_details
 
     def save_location_contents(
@@ -76,8 +77,12 @@ class LocationContentsController(BaseController):
                 umu_id=pubsub_message.payload.umu_id,
                 quantity=detail_model.quantity,
                 shipment_detail=min_models.ShipmentDetailMin(
-                    id=pubsub_message.payload.id,
+                    id=detail_model._id,
                     umu_id=pubsub_message.payload.umu_id,
+                    quantity=detail_model.quantity,
+                    shipment_id=detail_model.shipment.get("id"),
+                    shipment_foreign_id=detail_model.shipment.get("foreign_key"),
+                    shipment_order_id=detail_model.shipment.get("order_id"),
                     lot=detail_model.lot,
                     brand=detail_model.brand,
                 ),

@@ -3,7 +3,7 @@ import os
 import uvicorn
 from fastapi import FastAPI, status
 
-from app.libs import mongo_handler
+from app.libs import mongo_handler, pubsub_handler
 from app.libs.logger_middleware import LoggerMiddleware
 from app.v1.router import api_router
 
@@ -11,6 +11,7 @@ from app.v1.router import api_router
 def create_app() -> FastAPI:
     app = FastAPI()
     app.add_middleware(LoggerMiddleware)
+    app.add_event_handler("startup", pubsub_handler.open_connection)
     app.add_event_handler("startup", mongo_handler.open_connection)
     app.add_event_handler("shutdown", mongo_handler.close_connection)
     # Routers

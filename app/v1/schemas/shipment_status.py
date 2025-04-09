@@ -2,7 +2,8 @@
 * :description: Schema for shipment-status pubsub msg requests.
 """
 
-from pydantic import BaseModel, ConfigDict, Field, PositiveInt
+from pharmagob.v1.models.shipment import ShipmentModel
+from pydantic import BaseModel, ConfigDict, PositiveInt
 
 
 class Author(BaseModel):
@@ -11,18 +12,10 @@ class Author(BaseModel):
     display_name: str
 
 
-class Shipment(BaseModel):
-    id: str = Field(alias="_id")
-    umu_id: str
-    foreign_id: str
-    order_id: str
-    status: str
-
-
 class ShipmentStatusDataPayload(BaseModel):
     model_config = ConfigDict(use_enum_values=True)
 
-    payload: Shipment
+    payload: ShipmentModel
     status: str
     origin_timestamp: PositiveInt
     origin: str = "TODO"  # TODO
