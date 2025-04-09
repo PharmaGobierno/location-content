@@ -80,11 +80,9 @@ class LocationContentsController(BaseController):
                     id=detail_model._id,
                     umu_id=pubsub_message.payload.umu_id,
                     quantity=detail_model.quantity,
-                    shipment_id=detail_model.shipment.get("shipment_id"),
-                    shipment_foreign_id=detail_model.shipment.get(
-                        "shipment_foreign_id"
-                    ),
-                    shipment_order_id=detail_model.shipment.get("shipment_order_id"),
+                    shipment_id=detail_model.shipment.get("id"),
+                    shipment_foreign_id=detail_model.shipment.get("foreign_key"),
+                    shipment_order_id=detail_model.shipment.get("order_id"),
                     lot=detail_model.lot,
                     brand=detail_model.brand,
                 ),
