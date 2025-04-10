@@ -15,7 +15,7 @@ async def get_manager():
 
 
 async def open_connection():
-    conn_conf = MongoDbConnectionConf(connection_string={"authSource": "admin"})
+    conn_conf = MongoDbConnectionConf()
     db.manager = MongoDbManager(connection_conf=conn_conf)
 
 
