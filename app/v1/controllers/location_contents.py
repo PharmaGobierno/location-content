@@ -72,34 +72,39 @@ class LocationContentsController(BaseController):
     ) -> list[LocationContentModel]:
         res: list[LocationContentModel] = []
         for detail in shipment_details:
-            detail_model = ShipmentDetailModel(**detail)
+            detail_model = ShipmentDetailModel.from_dict(data=detail)
             model = LocationContentModel(
                 umu_id=pubsub_message.payload.umu_id,
+                order_number=detail_model.shipment.order_number,
+                lot=detail_model.lot,
                 quantity=detail_model.quantity,
-                shipment_detail=min_models.ShipmentDetailMin(
-                    id=detail_model._id,
-                    umu_id=pubsub_message.payload.umu_id,
-                    quantity=detail_model.quantity,
-                    shipment_id=detail_model.shipment.get("id"),
-                    shipment_foreign_id=detail_model.shipment.get("foreign_key"),
-                    shipment_order_id=detail_model.shipment.get("order_id"),
-                    lot=detail_model.lot,
-                    brand=detail_model.brand,
-                ),
-                user=min_models.UserMin(
-                    id=pubsub_message.author.id,
-                    umu_id=pubsub_message.author.umu_id,
-                    display_name=pubsub_message.author.display_name,
-                ),
                 item=min_models.ItemlMin(
-                    id=detail_model.item.get("id"),
-                    foreign_id=detail_model.item.get("foreign_id"),
-                    name=detail_model.item.get("name"),
+                    id=detail_model.item.id,
+                    foreign_id=detail_model.item.foreign_id,
+                    name=detail_model.item.name,
                 ),
                 location=min_models.LocationMin(
                     id=location._id,
                     umu_id=location.umu_id,
                     label_code=location.label_code,
+                ),
+                shipment_detail=[
+                    min_models.ShipmentDetailMin(
+                        id=detail_model._id,
+                        umu_id=pubsub_message.payload.umu_id,
+                        quantity=detail_model.quantity,
+                        shipment_id=detail_model.shipment.id,
+                        shipment_order_number=detail_model.shipment.order_number,
+                        shipment_load_id=detail_model.shipment.load_id,
+                        shipment_order_id=detail_model.shipment.order_id,
+                        lot=detail_model.lot,
+                        brand=detail_model.brand,
+                    )
+                ],
+                last_author=min_models.UserMin(
+                    id=pubsub_message.author.id,
+                    umu_id=pubsub_message.author.umu_id,
+                    display_name=pubsub_message.author.display_name,
                 ),
             )
             res.append(model)
@@ -120,9 +125,9 @@ class LocationContentsController(BaseController):
                 origin_timestamp=round(time() * 1000),
                 published_at=round(time() * 1000),
                 author=min_models.UserMin(
-                    id=content.user.id,
-                    umu_id=content.user.umu_id,
-                    display_name=content.user.display_name,
+                    id=content.last_author.id,
+                    umu_id=content.last_author.umu_id,
+                    display_name=content.last_author.display_name,
                 ),
             )
             attributes: dict = {"version": message.version, "state": message.state}
