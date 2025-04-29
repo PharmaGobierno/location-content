@@ -88,15 +88,15 @@ class LocationContentsController(BaseController):
                     umu_id=location.umu_id,
                     label_code=location.label_code,
                 ),
-                shipment_detail=[
+                shipment_details=[
                     min_models.ShipmentDetailMin(
                         id=detail_model._id,
                         umu_id=pubsub_message.payload.umu_id,
+                        item_id=detail_model.item.id,
                         quantity=detail_model.quantity,
                         shipment_id=detail_model.shipment.id,
                         shipment_order_number=detail_model.shipment.order_number,
                         shipment_load_id=detail_model.shipment.load_id,
-                        shipment_order_id=detail_model.shipment.order_id,
                         lot=detail_model.lot,
                         brand=detail_model.brand,
                     )
