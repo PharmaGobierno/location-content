@@ -7,7 +7,7 @@ from pharmagob.mongodb_repositories.base import BaseMongoDbRepository
 from pharmagob.mongodb_repositories.locations import LocationRepository
 from pharmagob.mongodb_repositories.shipment_details import ShipmentDetailRepository
 from pharmagob.v1.models.location_content import LocationContentModel
-from pharmagob.v1.models.messages.pubsub_msgs import LocationContentStatesPubsubMessage
+from pharmagob.v1.models.messages.pubsub_msgs import LocationContentEventsPubsubMessage
 from pharmagob.v1.models.minified import min_models
 from pharmagob.v1.models.shipment import ShipmentModel
 from pharmagob.v1.services.location_contents import LocationContentService
@@ -119,9 +119,9 @@ class LocationContentsController(BaseController):
     ) -> None:
         """Publish location content states to PubSub."""
         for content in location_content:
-            message = LocationContentStatesPubsubMessage(
+            message = LocationContentEventsPubsubMessage(
                 payload=content,
-                state="INTEGRATED",  # TODO: Enum
+                event="INTEGRATED",  # TODO: Enum
                 origin_timestamp=round(time() * 1000),
                 published_at=round(time() * 1000),
                 author=min_models.UserMin(
@@ -130,9 +130,9 @@ class LocationContentsController(BaseController):
                     display_name=content.last_author.display_name,
                 ),
             )
-            attributes: dict = {"version": message.version, "state": message.state}
+            attributes: dict = {"version": message.version, "event": message.state}
             self.pubsub_manager.publish(
-                LocationContentStatesPubsubMessage.topic(),
+                LocationContentEventsPubsubMessage.topic(),
                 message=message.dict(),
                 attributes=attributes,
             )
